@@ -1,0 +1,1 @@
+message message {required int32 foo = 1 [default = 1, deprecated=true];}

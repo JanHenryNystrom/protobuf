@@ -5,3 +5,5 @@ ebin
 *.beam
 *.plt
 rebar
+src/protobuf_parse.erl
+src/protobuf_scan.erl

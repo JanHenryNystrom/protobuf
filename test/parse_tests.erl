@@ -1,4 +1,3 @@
-%% -*-erlang-*-
 %%==============================================================================
 %% Copyright 2013 Jan Henry Nystrom <JanHenryNystrom@gmail.com>
 %%
@@ -17,20 +16,35 @@
 
 %%%-------------------------------------------------------------------
 %%% @doc
-%%%   A Google's Protocol Buffers Library.
+%%%   eunit unit tests for protobuf_parse parser.
 %%% @end
 %%%
 %% @author Jan Henry Nystrom <JanHenryNystrom@gmail.com>
 %% @copyright (C) 2013, Jan Henry Nystrom <JanHenryNystrom@gmail.com>
 %%%-------------------------------------------------------------------
-{application, protobuf,
- [
-  {description, "Google's Protocol Buffers Library"},
-  {vsn, "0.1"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib
-                 ]},
-  {env, []}
- ]}.
+-module(parse_tests).
+-copyright('Jan Henry Nystrom <JanHenryNystrom@gmail.com>').
+
+%% Includes
+-include_lib("eunit/include/eunit.hrl").
+
+%% ===================================================================
+%% Tests.
+%% ===================================================================
+
+%%%-------------------------------------------------------------------
+% Distro
+%%%-------------------------------------------------------------------
+parse_distro_test_() ->
+    [?_test(?assertEqual(true, is_list(protobuf_parse:file(File)))) ||
+        File <- files(distro)].
+
+
+%% ===================================================================
+%% Internal functions.
+%% ===================================================================
+
+files(distro) ->
+    Dir = filename:join([code:lib_dir(protobuf), "test", "protos", "distro"]),
+    {ok, Files} = file:list_dir(Dir),
+    [filename:join([Dir, File]) || File <- Files].

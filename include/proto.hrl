@@ -15,22 +15,4 @@
 %% limitations under the License.
 %%==============================================================================
 
-%%%-------------------------------------------------------------------
-%%% @doc
-%%%   A Google's Protocol Buffers Library.
-%%% @end
-%%%
-%% @author Jan Henry Nystrom <JanHenryNystrom@gmail.com>
-%% @copyright (C) 2013, Jan Henry Nystrom <JanHenryNystrom@gmail.com>
-%%%-------------------------------------------------------------------
-{application, protobuf,
- [
-  {description, "Google's Protocol Buffers Library"},
-  {vsn, "0.1"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib
-                 ]},
-  {env, []}
- ]}.
+-record(message, {name, body = []}).
