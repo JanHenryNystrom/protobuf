@@ -154,7 +154,7 @@ field_options -> ',' option_body field_options : ['$2' | '$3'].
 options -> '$empty' : [].
 options -> option options : ['$1' | '$2'].
 
-option -> t_option option_body ';' : '$1'.
+option -> t_option option_body ';' : '$2'.
 
 uninterpreted -> '$empty'.
 uninterpreted -> '{' uninterpreted '}' uninterpreted.
