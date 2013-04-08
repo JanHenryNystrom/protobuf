@@ -51,7 +51,7 @@ t_import t_public
 t_service t_package t_extend t_group t_extensions t_to t_max t_rpc t_returns
 t_identifier
 t_required t_optional t_repeated
-c_integer c_float c_bool c_string
+t_integer t_float t_bool t_string
 t_dot
 t_garbage
 %% Symbols
@@ -78,26 +78,27 @@ statements -> statement statements : add('$1', '$2').
 
 statement -> message : '$1'.
 statement -> enum : '$1'.
-statement -> service.
-statement -> extend.
-statement -> import.
-statement -> package.
-statement -> option.
+statement -> service : '$1'.
+statement -> extend : '$1'.
+statement -> import : '$1'.
+statement -> package : '$1'.
+statement -> option : '$1'.
 
-message -> t_message identifier '{' message_parts '}' : [].
-%%           #message{name = $2, body = '$4'}.
+message -> t_message identifier '{' message_parts '}' :
+           #message{name = '$2', body = '$4'}.
 
-import -> t_import c_string ';'.
-import -> t_import t_public c_string ';'.
+import -> t_import t_string ';' : #import{string = '$2'}.
+import -> t_import t_public t_string ';' :
+          #import{string = '$2', public = true}.
 
-identifier -> b_identifier h_identifier.
-identifier -> t_dot identifier h_identifier.
-identifier -> '(' identifier ')' h_identifier.
+identifier -> b_identifier h_identifier : add('$1', '$2').
+identifier -> t_dot identifier h_identifier : add('$2', '$3').
+identifier -> '(' identifier ')' h_identifier : add({'$2'}, '$4').
 
-h_identifier -> '$empty'.
-h_identifier ->  t_dot identifier h_identifier.
+h_identifier -> '$empty' : [].
+h_identifier ->  t_dot identifier h_identifier : add('$2', '$3').
 
-b_identifier -> t_identifier.
+b_identifier -> t_identifier : '$1'.
 b_identifier -> t_message : token(b_identifier, '$1').
 b_identifier -> t_enum : token(b_identifier, '$1').
 b_identifier -> t_option : token(b_identifier, '$1').
@@ -114,7 +115,7 @@ label -> t_required : token(label, '$1').
 label -> t_optional : token(label, '$1').
 label -> t_repeated : token(label, '$1').
 
-tag -> c_integer.
+tag -> t_integer : '$1'.
 
 message_parts -> '$empty' : [].
 %% generated 10 more shift/reduce.
@@ -127,8 +128,8 @@ message_parts -> option message_parts : add('$1', '$2').
 message_parts -> field message_parts : add('$1', '$2').
 message_parts -> group message_parts : add('$1', '$2').
 
-group -> label t_group identifier '=' c_integer message_parts.
-
+group -> label t_group identifier '=' tag message_parts :
+         #group{label = '$1', name = '$3', tag = '$5', parts = '$6'}.
 
 enum -> t_enum identifier '{' option_enum_field '}'.
 
@@ -136,29 +137,32 @@ option_enum_field -> '$empty'.
 option_enum_field -> option option_enum_field.
 option_enum_field -> enum_field option_enum_field.
 
-enum_field -> identifier '=' c_integer ';'.
-enum_field -> identifier '=' c_integer '[' option_body ']' ';'.
+enum_field -> identifier '=' t_integer ';'.
+enum_field -> identifier '=' t_integer '[' option_body ']' ';'.
 
-field -> label type identifier '=' tag ';'.
-field -> label type identifier '=' tag '[' option_body  field_options ']' ';'.
-field -> label t_group identifier '=' tag '{' fields '}'.
+field -> label type identifier '=' tag ';' :
+         #field{label = '$1', type = '$2', name = '$3', tag = '$5'}.
+field -> label type identifier '=' tag '[' option_body  field_options ']' ';' :
+         #field{label = '$1', type = '$2', name = '$3', tag = '$5',
+                options = ['$7' | '$8']}.
+field -> label t_group identifier '=' tag '{' fields '}' :
+         #group{label = '$1', name = '$3', tag = '$5', parts = '$7'}.
 
+field_options -> '$empty' : [].
+field_options -> ',' option_body field_options : ['$2' | '$3'].
 
-field_options -> '$empty'.
-field_options -> ',' option_body field_options.
+options -> '$empty' : [].
+options -> option options : ['$1' | '$2'].
 
-options -> '$empty'.
-options -> option options.
-
-option -> t_option option_body ';'.
+option -> t_option option_body ';' : '$1'.
 
 uninterpreted -> '$empty'.
 uninterpreted -> '{' uninterpreted '}' uninterpreted.
 uninterpreted -> t_identifier uninterpreted.
-uninterpreted -> c_integer uninterpreted.
-uninterpreted -> c_float uninterpreted.
-uninterpreted -> c_bool uninterpreted.
-uninterpreted -> c_string uninterpreted.
+uninterpreted -> t_integer uninterpreted.
+uninterpreted -> t_float uninterpreted.
+uninterpreted -> t_bool uninterpreted.
+uninterpreted -> t_string uninterpreted.
 uninterpreted -> t_dot uninterpreted.
 uninterpreted -> '(' uninterpreted.
 uninterpreted -> ')' uninterpreted.
@@ -170,44 +174,49 @@ uninterpreted -> ',' uninterpreted.
 uninterpreted -> t_garbage uninterpreted.
 
 %% option_body -> '(' identifier ')' '=' constant.
-option_body -> identifier '=' constant.
-option_body -> identifier '=' '{' uninterpreted '}'.
+option_body -> identifier '=' constant : #option{name = '$1', value = '$3'}.
+option_body -> identifier '=' '{' uninterpreted '}' : #option{name = '$1'}.
 
-constant -> t_identifier.
-constant -> c_integer.
-constant -> c_float.
-constant -> c_string.
-constant -> c_bool.
+constant -> t_identifier : '$1'.
+constant -> t_integer : '$1'.
+constant -> t_float : '$1'.
+constant -> t_string : '$1'.
+constant -> t_bool : '$1'.
 
-type -> identifier.
+type -> identifier : '$1'.
 
-package -> t_package identifier ';'.
+package -> t_package identifier ';' : #package{name = '$2'}.
 
-extend -> t_extend identifier '{' fields '}'.
-extend -> t_extend identifier '{' group '}'.
+extend -> t_extend identifier '{' fields '}' :
+          #extend{name = '$2', fields = '$4'}.
+extend -> t_extend identifier '{' group '}' :
+          #extend{name = '$2', group = '$4'}.
 
-fields -> '$empty'.
-fields -> ';'.
-fields -> field fields.
+fields -> '$empty' : [].
+fields -> ';' : [].
+fields -> field fields : add('$1', '$2').
 
-service -> t_service identifier '{' option_rpc '}'.
+service -> t_service identifier '{' option_rpc '}' :
+           #service{name = '$2', option_rpc = '$4'}.
 
-option_rpc -> '$empty'.
-option_rpc -> option option_rpc.
-option_rpc -> rpc option_rpc.
+option_rpc -> '$empty' : [].
+option_rpc -> option option_rpc : ['$1' | '$2'].
+option_rpc -> rpc option_rpc : ['$1' | '$2'].
 
 %% rpc -> t_rpc identifier '(' identifier ')' t_returns '(' identifier ')' ';'.
-rpc -> t_rpc identifier identifier t_returns identifier ';'.
-rpc -> t_rpc identifier identifier t_returns identifier '{' options '}'.
+rpc -> t_rpc identifier identifier t_returns identifier ';' :
+       #rpc{name = '$2', arg = '$3', return = '$5'}.
+rpc -> t_rpc identifier identifier t_returns identifier '{' options '}' :
+       #rpc{name = '$2', arg = '$3', return = '$5', options = '$7'}.
 
-extensions -> t_extensions extension extension_star ';'.
+extensions -> t_extensions extension extension_star ';' : ['$2' | '$3'].
 
-extension_star -> '$empty'.
-extension_star -> ',' extension extension_star.
+extension_star -> '$empty' : [].
+extension_star -> ',' extension extension_star : ['$2' | '$3'].
 
-extension -> c_integer.
-extension -> c_integer t_to c_integer.
-extension -> c_integer t_to t_max.
+extension -> t_integer : #extension{from = '$1'}.
+extension -> t_integer t_to t_integer : #extension{from = '$1', to = '$3'}.
+extension -> t_integer t_to t_max : #extension{from = '$1', to = max}.
 
 
 %% ===================================================================

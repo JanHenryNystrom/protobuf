@@ -15,4 +15,53 @@
 %% limitations under the License.
 %%==============================================================================
 
--record(message, {name, body = []}).
+-record(message,
+        {name,
+         body = []}).
+
+-record(extension,
+        {from :: integer(),
+         to :: integer() | max}).
+
+-record(rpc,
+        {name,
+         arg,
+         return,
+         options = []
+        }).
+
+-record(service,
+        {name,
+         option_rpc}).
+
+-record(extend,
+        {name,
+         fields = [],
+         group
+        }).
+
+-record(package, {name}).
+
+-record(field,
+        {label,
+         type,
+         name,
+         tag,
+         options}).
+
+-record(group,
+        {label,
+         name,
+         tag,
+         parts = []}).
+
+-record(import,
+        {string,
+         public = false :: boolean()
+        }).
+
+-record(option,
+        {name,
+         value = garbage
+        }).
+

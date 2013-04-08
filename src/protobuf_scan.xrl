@@ -71,36 +71,36 @@ Rules.
 {Symbol} : {token, {list_to_atom(TokenChars), TokenLine}}.
 
 %% The keywords that are identifiers, ,sigh.
-message : {token, {t_message, TokenLine, "message"}}.
-enum : {token, {t_enum, TokenLine, "enum"}}.
-import : {token, {t_import, TokenLine, "import"}}.
-public : {token, {t_public, TokenLine, "public"}}.
-service : {token, {t_service, TokenLine, "service"}}.
-package : {token, {t_package, TokenLine, "package"}}.
-extend : {token, {t_extend, TokenLine, "extend"}}.
-group : {token, {t_group, TokenLine, "group"}}.
-extensions : {token, {t_extensions, TokenLine, "extensions"}}.
-to : {token, {t_to, TokenLine, "to"}}.
-max : {token, {t_max, TokenLine, "max"}}.
-option : {token, {t_option, TokenLine, "option"}}.
-rpc : {token, {t_rpc, TokenLine, "rpc"}}.
-returns : {token, {t_returns, TokenLine, "returns"}}.
-required : {token, {t_required, TokenLine, "required"}}.
-optional : {token, {t_optional, TokenLine, "optional"}}.
-repeated : {token, {t_repeated, TokenLine, "repeated"}}.
+message : {token, {t_message, TokenLine, message}}.
+enum : {token, {t_enum, TokenLine, enum}}.
+import : {token, {t_import, TokenLine, import}}.
+public : {token, {t_public, TokenLine, public}}.
+service : {token, {t_service, TokenLine, service}}.
+package : {token, {t_package, TokenLine, package}}.
+extend : {token, {t_extend, TokenLine, extend}}.
+group : {token, {t_group, TokenLine, group}}.
+extensions : {token, {t_extensions, TokenLine, extensions}}.
+to : {token, {t_to, TokenLine, to}}.
+max : {token, {t_max, TokenLine, max}}.
+option : {token, {t_option, TokenLine, option}}.
+rpc : {token, {t_rpc, TokenLine, rpc}}.
+returns : {token, {t_returns, TokenLine, returns}}.
+required : {token, {t_required, TokenLine, required}}.
+optional : {token, {t_optional, TokenLine, optional}}.
+repeated : {token, {t_repeated, TokenLine, repeated}}.
 
 %% Booleans
-true : {token, {c_bool, TokenLine, true}}.
-false : {token, {c_bool, TokenLine, false}}.
+true : {token, {t_bool, TokenLine, true}}.
+false : {token, {t_bool, TokenLine, false}}.
 
-{Float} : {token, {c_float, TokenLine, to_float(TokenChars)}}.
-{DecInt} : {token, {c_integer, TokenLine, list_to_integer(TokenChars)}}.
-{HexInt} : {token, {c_integer, TokenLine, hex_int(TokenChars)}}.
-{OctInt} : {token, {c_integer, TokenLine, list_to_integer(TokenChars, 8)}}.
+{Float} : {token, {t_float, TokenLine, to_float(TokenChars)}}.
+{DecInt} : {token, {t_integer, TokenLine, list_to_integer(TokenChars)}}.
+{HexInt} : {token, {t_integer, TokenLine, hex_int(TokenChars)}}.
+{OctInt} : {token, {t_integer, TokenLine, list_to_integer(TokenChars, 8)}}.
 
 {Identifier}  : {token, {t_identifier, TokenLine, list_to_atom(TokenChars)}}.
 
-{String} : {token, {c_string, TokenLine, TokenChars}}.
+{String} : {token, {t_string, TokenLine, TokenChars}}.
 
 {Dot} : {token, {t_dot, TokenLine}}.
 
