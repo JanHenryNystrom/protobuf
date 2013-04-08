@@ -47,4 +47,6 @@ parse_distro_test_() ->
 files(distro) ->
     Dir = filename:join([code:lib_dir(protobuf), "test", "protos", "distro"]),
     {ok, Files} = file:list_dir(Dir),
-    [filename:join([Dir, File]) || File <- Files].
+    [filename:join([Dir, File]) ||
+        File <- Files,
+        filename:extension(File) == ".proto"].
