@@ -14,50 +14,12 @@
 # limitations under the License.
 #==============================================================================
 
-REBAR="./rebar"
-.PHONY: all compile check test doc clean get-deps update-deps real-clean
+BASE := $(strip $(wildcard deps/makefiles/erlang.mk))
 
-all: get-deps compile
+ifeq (${BASE},)
+  DUMMY := $(shell mkdir -p deps)
+  DUMMY := $(shell cd deps && \
+                   git clone https://github.com/JanHenryNystrom/makefiles)
+endif
 
-rebar:
-	mkdir -p deps
-	(cd deps && git clone https://github.com/rebar/rebar)
-	(cd deps/rebar && ./bootstrap)
-	cp deps/rebar/rebar .
-
-compile: rebar
-	@$(REBAR) -j compile
-
-xref: rebar
-	@$(REBAR) -jk skip_deps=true xref
-
-check: rebar
-	@$(REBAR) -j check-plt
-	@$(REBAR) -j dialyze
-
-test: all
-	@rm -rf .eunit
-	@$(REBAR) -jk eunit skip_deps=true
-
-doc: rebar
-	@$(REBAR) -j doc skip_deps=true
-
-clean: rebar
-	@$(REBAR) -j clean
-
-dist-clean: clean
-	@$(REBAR) -j delete-deps
-
-real-clean: dist-clean
-	rm -f rebar
-	rm -fr deps
-get-deps: rebar
-	@$(REBAR) -j get-deps
-
-update-deps: rebar
-	@$(REBAR) -j update-deps
-	@$(REBAR) -j get-deps
-
-update-rebar: all
-	(cd deps/rebar && ./bootstrap)
-	cp deps/rebar/rebar ${REBAR}
+include deps/makefiles/erlang.mk
